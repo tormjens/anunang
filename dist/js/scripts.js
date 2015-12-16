@@ -30122,7 +30122,7 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 	$locationProvider.hashPrefix('!');
     $locationProvider.html5Mode(true);
 
-    /**	
+    /**
      * Default page title
      */
     $pageTitleProvider.setDefault(App.title);
@@ -30145,7 +30145,7 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 			single: App.partials + 'single-' + post_type.name + '.html'
 		}
 		if(post_type.rest_base) {
-			slug = post_type.rest_base;
+			slug = post_type.name;
 		}
 		else {
 			if(post_type.rewrite) {
@@ -30172,18 +30172,18 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 			resolve: {
 				post_type: function() {
 					return post_type;
+				},
+				slug: function() {
+					return slug;
 				}
 			}
-		})
-		.otherwise({
-			redirectTo: '/'
 		});
 
 	});
     /**
      * Create routes for all post types
      */
-	angular.forEach(App.taxonomies, function(taxonomy) {
+	angular.forEach(App.taxonomies, function(taxonomy, taxonomy_slug) {
 		var slug = taxonomy.rewrite.slug;
 		var template = {
 			archive: App.partials + slug + '.html',
@@ -30194,6 +30194,9 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 			resolve: {
 				taxonomy: function() {
 					return taxonomy;
+				},
+				taxonomy_slug: function() {
+					return taxonomy_slug;
 				}
 			}
 		})
@@ -30202,8 +30205,23 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 		});
 	});
 })
+app.directive('postLink', function() {
+	return {
+		restrict: 'AE',
+		replace: 'true',
+		template: '<a class="post-link" href="/{{post.type}}/{{post.slug}}" ng-bind-html="post.title.rendered"></a>'
+	};
+});
+app.directive('ngPartial', function() {
+	return {
+		restrict: 'ECA',
+		replace: 'true',
+		template: ''
+	};
+});
 app.controller('Archive', function($scope, $http, $routeParams, $location, post_type, $pageTitle) {
 	$pageTitle.set(post_type.label);
+	$scope.post_type = post_type;
 	var url = App.api + '/posts/?type=' + post_type.name;
 	$http.get(url).success(function(res){
 		$scope.posts = res;
@@ -30215,18 +30233,28 @@ app.controller('Main', function($scope, $http, $routeParams, $pageTitle) {
 		$scope.posts = res;
 	});
 });
-app.controller('Single', ['$scope', '$http', '$routeParams', function($scope, $http, $routeParams, $pageTitle) {
-	console.log(App.api + '/posts/?filter[name]=' + $routeParams.slug);
+app.controller('Single', function($scope, $http, $routeParams, $pageTitle, slug, post_type, $pageTitle, $sce) {
+	$scope.slug = slug;
+	$scope.post_type = post_type;
 	$http.get(App.api + '/posts/?filter[name]=' + $routeParams.slug).success(function(res){
 		var post = res[0];
+		post.title.rendered = $sce.trustAsHtml(post.title.rendered);
+		post.excerpt.rendered = $sce.trustAsHtml(post.excerpt.rendered);
+		post.content.rendered = $sce.trustAsHtml(post.content.rendered);
 		$scope.post = post;
+		$pageTitle.set(post.title.rendered);
 	});
-}]);
-app.controller('Taxonomy', function($scope, $http, $routeParams, $location, taxonomy, $pageTitle) {
-	$pageTitle.set(taxonomy.labels.name);
-	console.log(taxonomy);
-	var url = App.api + '/taxonomies/?type=' + taxonomy.labels.name;
-	$http.get(url).success(function(res){
-		$scope.posts = res;
+});
+app.controller('Taxonomy', function($scope, $http, $routeParams, $location, taxonomy, taxonomy_slug, $pageTitle) {
+	var url = App.api + '/terms/'+ taxonomy_slug +'/?filter[slug]=' + $routeParams.slug;
+	$scope.taxonomy_slug = taxonomy_slug;
+	$scope.taxonomy = taxonomy;
+	$http.get(url).success(function(terms){
+		$scope.term = terms[0];
+		$pageTitle.set(terms[0].name);
+		var url = App.api + '/posts?'+ taxonomy_slug +'=' + $routeParams.slug;
+		$http.get(url).success(function(posts) {
+			$scope.posts = posts;
+		});
 	});
 });

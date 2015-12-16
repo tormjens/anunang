@@ -4,7 +4,7 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 	$locationProvider.hashPrefix('!');
     $locationProvider.html5Mode(true);
 
-    /**	
+    /**
      * Default page title
      */
     $pageTitleProvider.setDefault(App.title);
@@ -27,7 +27,7 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 			single: App.partials + 'single-' + post_type.name + '.html'
 		}
 		if(post_type.rest_base) {
-			slug = post_type.rest_base;
+			slug = post_type.name;
 		}
 		else {
 			if(post_type.rewrite) {
@@ -54,18 +54,18 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 			resolve: {
 				post_type: function() {
 					return post_type;
+				},
+				slug: function() {
+					return slug;
 				}
 			}
-		})
-		.otherwise({
-			redirectTo: '/'
 		});
 
 	});
     /**
      * Create routes for all post types
      */
-	angular.forEach(App.taxonomies, function(taxonomy) {
+	angular.forEach(App.taxonomies, function(taxonomy, taxonomy_slug) {
 		var slug = taxonomy.rewrite.slug;
 		var template = {
 			archive: App.partials + slug + '.html',
@@ -76,6 +76,9 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 			resolve: {
 				taxonomy: function() {
 					return taxonomy;
+				},
+				taxonomy_slug: function() {
+					return taxonomy_slug;
 				}
 			}
 		})

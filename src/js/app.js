@@ -4,6 +4,8 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 	$locationProvider.hashPrefix('!');
     $locationProvider.html5Mode(true);
 
+
+
     /**
      * Default page title
      */

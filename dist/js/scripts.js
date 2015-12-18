@@ -30122,6 +30122,8 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
 	$locationProvider.hashPrefix('!');
     $locationProvider.html5Mode(true);
 
+
+
     /**
      * Default page title
      */
@@ -30212,24 +30214,31 @@ app.directive('postLink', function() {
 		template: '<a class="post-link" href="/{{post.type}}/{{post.slug}}" ng-bind-html="post.title.rendered"></a>'
 	};
 });
-app.directive('ngPartial', function() {
+app.directive('appPartial', function() {
 	return {
-		restrict: 'ECA',
-		replace: 'true',
-		template: ''
-	};
+		restrict: 'E',
+		compile: function(element, attrs) {
+			element.append("<div ng-include=\"'"+ App.partial_relative + attrs.src +"'\"></div>");
+		}
+	}
 });
 app.controller('Archive', function($scope, $http, $routeParams, $location, post_type, $pageTitle) {
 	$pageTitle.set(post_type.label);
 	$scope.post_type = post_type;
 	var url = App.api + '/posts/?type=' + post_type.name;
 	$http.get(url).success(function(res){
+		for (var i = res.length - 1; i >= 0; i--) {
+			res[i].url = '/' + res[i].type + '/' + res[i].slug;
+		};
 		$scope.posts = res;
 	});
 });
 app.controller('Main', function($scope, $http, $routeParams, $pageTitle) {
 	$pageTitle.set('Home');
 	$http.get(App.api + '/posts/').success(function(res){
+		for (var i = res.length - 1; i >= 0; i--) {
+			res[i].url = '/' + res[i].type + '/' + res[i].slug;
+		};
 		$scope.posts = res;
 	});
 });

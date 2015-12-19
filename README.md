@@ -4,26 +4,26 @@ AnunaNG is a WordPress-theme powered by AngularJS and the WordPress REST API.
 
 This is my first attempt at creating an AngularJS-powered application
 
-# Features
+## Features
 
 * AngularJS (1.4.8)
 * AngularJS Routing (1.4.8)
 * WordPress Rest API
 
-# Requirements
+## Requirements
 
 * node >= 0.12.2
 * npm >= 2.7.5
 * bower >= 1.4.1
 * gulp >= 3.9.0
 
-# Development
+## Development
 
-## Building
+### Building
 
 We use Gulp as our build tool.
 
-### Default
+#### Default
 
 Runs the build process and starts watching files
 
@@ -31,7 +31,7 @@ Runs the build process and starts watching files
 gulp
 ```
 
-### Build
+#### Build
 
 Concatinates javascript
 
@@ -39,7 +39,7 @@ Concatinates javascript
 gulp build
 ```
 
-### Watch 
+#### Watch 
 
 Watches files in source directories
 
@@ -47,7 +47,7 @@ Watches files in source directories
 gulp watch
 ```
 
-## Assets
+### Assets
 
 Bower is used to install asset packages to the theme.
 
@@ -57,7 +57,7 @@ To install a new asset, from the command line run:
 bower install package-name
 ```
 
-## Project Structure
+### Project Structure
 
 ```
 .
@@ -104,4 +104,19 @@ bower install package-name
 ├── package.json                # NPM definitions
 ├── README.md                   # The readme-file
 ├── style.css                   # Holds no actual styles, but is required by WordPress to define the theme
+```
+
+### Scripts Load Order
+
+The scripts are concatenated in a specific order to the compiled file.
+
+```
+angular.js
+angular-route.js
+functions.js
+services/*.js
+routes.js
+app.js
+directives/*.js
+controllers/*.js
 ```

@@ -9,7 +9,6 @@ gulp.task('scripts', function (){
 		'src/js/services/*.js',
 		'src/js/routes.js',
 		'src/js/app.js',
-		'src/js/models/*.js',
 		'src/js/directives/*.js',
 		'src/js/controllers/*.js',
 	])

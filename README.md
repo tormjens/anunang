@@ -16,6 +16,8 @@ This is my first attempt at creating an AngularJS-powered application
 * npm >= 2.7.5
 * bower >= 1.4.1
 * gulp >= 3.9.0
+* WordPress >= 4.4
+* WP Rest API >= 2.0-beta9
 
 ## Development
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function register_people_post_type() {
 

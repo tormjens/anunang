@@ -7,6 +7,7 @@ gulp.task('scripts', function (){
 		'bower_components/angular-route/angular-route.js',
 		'src/js/functions.js',
 		'src/js/services/*.js',
+		'src/js/modules/*.js',
 		'src/js/routes.js',
 		'src/js/app.js',
 		'src/js/directives/*.js',

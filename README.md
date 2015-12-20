@@ -82,6 +82,8 @@ bower install package-name
 │   │   ├── directives          # Custom Angular Directives
 │   │   │   ├── appPartial.js   # A custom directive for including partials in templates
 │   │   │   ├── postLink.js     # A custom directive for creating a link to a single post
+│   │   ├── modules             # Custom Angular Modules
+│   │   │   ├── Helper.js       # A set of custom filters
 │   │   ├── services            # Custom Angular Services
 │   │   │   ├── pageTitle.js    # A service to modify the title of the page
 │   │   ├── app.js              # The main application file
@@ -116,6 +118,7 @@ The scripts are concatenated in a specific order to the compiled file.
 angular.js
 angular-route.js
 functions.js
+modules/*.js
 services/*.js
 routes.js
 app.js

@@ -1,12 +1,13 @@
 app.controller('Single', function($scope, $http, $routeParams, $pageTitle, slug, post_type, $pageTitle, $sce) {
 	$scope.slug = slug;
 	$scope.post_type = post_type;
-	$http.get(App.api + '/posts/?filter[name]=' + $routeParams.slug).success(function(res){
+	var url = buildApiUrl(post_type.base, '', {
+		name: $routeParams.slug,
+	});
+	$http.get(url).success(function(res){
+		console.log(res);
 		var post = res[0];
-		post.title.rendered = $sce.trustAsHtml(post.title.rendered);
-		post.excerpt.rendered = $sce.trustAsHtml(post.excerpt.rendered);
-		post.content.rendered = $sce.trustAsHtml(post.content.rendered);
 		$scope.post = post;
-		$pageTitle.set(post.title.rendered);
+		$pageTitle.set($sce.trustAsHtml(post.title.rendered));
 	});
 });

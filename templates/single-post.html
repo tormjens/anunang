@@ -1,11 +1,15 @@
-<h1 class="post-title">{{post.title.rendered}}</h1>
+<!-- Post Title -->
+<h1 class="post-title" ng-if="post.title.rendered" ng-bind-html="post | post_title"></h1>
 
-<div
-	ng-if="post.excerpt.rendered"
-	ng-bind-html="post.excerpt.rendered"
-	class="post-excerpt"></div>
+<!-- Post Excerpt -->
+<div class="post-excerpt" ng-if="post.excerpt.rendered" ng-bind-html="post | post_excerpt"></div>
 
-<div
-	ng-if="post.content.rendered"
-	ng-bind-html="post.content.rendered"
-	class="post-content"></div>
+<!-- Post Content -->
+<div class="post-content" ng-if="post.content.rendered" ng-bind-html="post | post_content"></div>
+
+<div class="post-category" ng-if="post.category">
+	<strong>Posted in:</strong>
+	<span ng-repeat="category in post.category">
+		<a href="{{ category | term_link }}">{{category.name}}</a>
+	</span>
+</div>

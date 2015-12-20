@@ -24,29 +24,32 @@ angular.forEach(App.post_types, function(post_type) {
 		archive: App.partials + 'archive-' + post_type.name + '.html',
 		single: App.partials + 'single-' + post_type.name + '.html'
 	}
+	if(post_type.rewrite) { // change the slug if a rewrite is done
+		slug = post_type.rewrite.slug;
+	}
 
-	if(post_type.rest_base) { // this is a native post type
-		slug = post_type.name;
-	} else { // this is a custom post type, maybe
-		if(post_type.rewrite) { // change the slug if a rewrite is done
-			slug = post_type.rewrite.slug;
-		}
-		if(post_type.has_archive) { // create an archive route if it has an archive
-			routes.push({
-				path: '/' + post_type.has_archive,
-				options: {
-					templateUrl: template.archive,
-					controller: 'Archive',
-					resolve: {
-						// attach the post type object
-						post_type: function() {
-							return post_type;
-						}
+	var base = post_type.name;
+	if(post_type.rest_base) {
+		base = post_type.rest_base;
+	}
+	post_type.base = base;
+
+	if(post_type.has_archive && post_type.show_in_rest) { // create an archive route if it has an archive
+		routes.push({
+			path: '/' + post_type.has_archive,
+			options: {
+				templateUrl: template.archive,
+				controller: 'Archive',
+				resolve: {
+					// attach the post type object
+					post_type: function() {
+						return post_type;
 					}
 				}
-			});
-		}
+			}
+		});
 	}
+
 	// for single post type posts
 	routes.push({
 		path: '/' + slug + '/:slug',

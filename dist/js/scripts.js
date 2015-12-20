@@ -30008,7 +30008,29 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-
+function buildApiUrl(endpoint, slug, filters) {
+	var url = App.api;
+	url += '/' + endpoint;
+	if(slug) {
+		url += '/' + slug;
+	}
+	if(filters) {
+		url += '/?'
+		var i = 0;
+		for (var k in filters) {
+			i++;
+			var filter = filters[k];
+			if(i !== 1) {
+				url += '&';
+			}
+			if(endpoint === 'pages' && k === 'slug') {
+				k = 'name';
+			}
+			url += 'filter['+ k +']='+ filter;
+		};
+	}
+	return url;
+}
 /**
  * $pageTitle
  * ==========
@@ -30117,6 +30139,51 @@ angular.module('ngPageTitle', ['ngRoute'])
 
   this.$get = ['$rootScope', '$window', PageTitleService];
 });
+var module = angular.module('Helpers', []);
+
+module.filter('post_link', function() {
+	return function(post) {
+		return '/' + post.type + '/' + post.slug;
+	}
+});
+
+module.filter('post_title', function($sce) {
+	return function(post) {
+		var title = post.title;
+		if(post.title.rendered) {
+			title = post.title.rendered;
+		}
+		return $sce.trustAsHtml(title);
+	}
+});
+
+module.filter('post_excerpt', function($sce) {
+	return function(post) {
+		var excerpt = post.excerpt;
+		if(post.excerpt.rendered) {
+			excerpt = post.excerpt.rendered;
+		}
+		return $sce.trustAsHtml(excerpt);
+	}
+});
+
+module.filter('post_content', function($sce) {
+	return function(post) {
+		var content = post.content;
+		if(post.content.rendered) {
+			content = post.content.rendered;
+		}
+		return $sce.trustAsHtml(content);
+	}
+});
+
+module.filter('term_link', function($sce) {
+	return function(term) {
+		var taxonomy = App.taxonomies[term.taxonomy];
+		var slug = taxonomy.rewrite.slug; // remember the slug
+		return '/' + slug + '/' + term.slug;
+	}
+});
 /**
  * Define app routes
  * @type {Array}
@@ -30143,29 +30210,32 @@ angular.forEach(App.post_types, function(post_type) {
 		archive: App.partials + 'archive-' + post_type.name + '.html',
 		single: App.partials + 'single-' + post_type.name + '.html'
 	}
+	if(post_type.rewrite) { // change the slug if a rewrite is done
+		slug = post_type.rewrite.slug;
+	}
 
-	if(post_type.rest_base) { // this is a native post type
-		slug = post_type.name;
-	} else { // this is a custom post type, maybe
-		if(post_type.rewrite) { // change the slug if a rewrite is done
-			slug = post_type.rewrite.slug;
-		}
-		if(post_type.has_archive) { // create an archive route if it has an archive
-			routes.push({
-				path: '/' + post_type.has_archive,
-				options: {
-					templateUrl: template.archive,
-					controller: 'Archive',
-					resolve: {
-						// attach the post type object
-						post_type: function() {
-							return post_type;
-						}
+	var base = post_type.name;
+	if(post_type.rest_base) {
+		base = post_type.rest_base;
+	}
+	post_type.base = base;
+
+	if(post_type.has_archive && post_type.show_in_rest) { // create an archive route if it has an archive
+		routes.push({
+			path: '/' + post_type.has_archive,
+			options: {
+				templateUrl: template.archive,
+				controller: 'Archive',
+				resolve: {
+					// attach the post type object
+					post_type: function() {
+						return post_type;
 					}
 				}
-			});
-		}
+			}
+		});
 	}
+
 	// for single post type posts
 	routes.push({
 		path: '/' + slug + '/:slug',
@@ -30214,7 +30284,7 @@ angular.forEach(App.taxonomies, function(taxonomy, taxonomy_slug) {
 		}
 	});
 });
-var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
+var app = angular.module('app', ['ngRoute', 'ngPageTitle', 'Helpers'])
 .config(function($pageTitleProvider, $routeProvider, $locationProvider) {
 	$locationProvider.hashPrefix('!');
     $locationProvider.html5Mode(true);
@@ -30225,11 +30295,18 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle'])
     $pageTitleProvider.setDefault(App.title);
 
     /**
-     * Add routes
+     * Add routes from the route definitions file
      */
 	angular.forEach(routes, function(route) {
 		$routeProvider.when(route.path, route.options);
 	});
+
+    $routeProvider.otherwise({
+        templateUrl: App.partials + 'error.html',
+        controller: function($pageTitle) {
+            $pageTitle.set('Page Not Found');
+        }
+    });
 })
 app.directive('appPartial', function() {
 	return {
@@ -30249,45 +30326,39 @@ app.directive('postLink', function() {
 app.controller('Archive', function($scope, $http, $routeParams, $location, post_type, $pageTitle) {
 	$pageTitle.set(post_type.label);
 	$scope.post_type = post_type;
-	var url = App.api + '/posts/?type=' + post_type.name;
+	var url = buildApiUrl(post_type.base);
 	$http.get(url).success(function(res){
-		for (var i = res.length - 1; i >= 0; i--) {
-			res[i].url = '/' + res[i].type + '/' + res[i].slug;
-		};
 		$scope.posts = res;
 	});
 });
 app.controller('Main', function($scope, $http, $routeParams, $pageTitle) {
 	$pageTitle.set('Home');
 	$http.get(App.api + '/posts/').success(function(res){
-		for (var i = res.length - 1; i >= 0; i--) {
-			res[i].url = '/' + res[i].type + '/' + res[i].slug;
-		};
 		$scope.posts = res;
 	});
 });
 app.controller('Single', function($scope, $http, $routeParams, $pageTitle, slug, post_type, $pageTitle, $sce) {
 	$scope.slug = slug;
 	$scope.post_type = post_type;
-	$http.get(App.api + '/posts/?filter[name]=' + $routeParams.slug).success(function(res){
+	var url = buildApiUrl(post_type.base, '', {
+		name: $routeParams.slug,
+	});
+	$http.get(url).success(function(res){
+		console.log(res);
 		var post = res[0];
-		post.title.rendered = $sce.trustAsHtml(post.title.rendered);
-		post.excerpt.rendered = $sce.trustAsHtml(post.excerpt.rendered);
-		post.content.rendered = $sce.trustAsHtml(post.content.rendered);
 		$scope.post = post;
-		$pageTitle.set(post.title.rendered);
+		$pageTitle.set($sce.trustAsHtml(post.title.rendered));
 	});
 });
 app.controller('Taxonomy', function($scope, $http, $routeParams, $location, taxonomy, taxonomy_slug, $pageTitle) {
-	var url = App.api + '/terms/'+ taxonomy_slug +'/?filter[slug]=' + $routeParams.slug;
+	var url = buildApiUrl('terms', taxonomy_slug, {
+		slug: $routeParams.slug
+	});
 	$scope.taxonomy_slug = taxonomy_slug;
 	$scope.taxonomy = taxonomy;
 	$http.get(url).success(function(terms){
 		$scope.term = terms[0];
 		$pageTitle.set(terms[0].name);
-		var url = App.api + '/posts?'+ taxonomy_slug +'=' + $routeParams.slug;
-		$http.get(url).success(function(posts) {
-			$scope.posts = posts;
-		});
+		$scope.posts = terms[0].posts;
 	});
 });

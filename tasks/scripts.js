@@ -20,7 +20,7 @@ gulp.task('scripts', function (){
 	])
     .pipe(concat('scripts.js'))
     .pipe(gulpif(argv.production, uglify()))
-    .pipe(gulpif(argv.production, notify('AnunaNG: Uglified scripts.')))
-    .pipe(notify('AnunaNG: Compiled scripts.'))
+    .pipe(gulpif(argv.production, notify('ngPress: Uglified scripts.')))
+    .pipe(notify('ngPress: Compiled scripts.'))
     .pipe(gulp.dest('./dist/js/'));
 });

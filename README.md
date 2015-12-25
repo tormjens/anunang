@@ -1,8 +1,8 @@
-# AnunaNG 
+# ngPress 
 
-AnunaNG is a WordPress-theme powered by AngularJS and the WordPress REST API.
+ngPress is a WordPress-theme powered by AngularJS and the WordPress REST API.
 
-This is my first attempt at creating an AngularJS-powered application
+This is my first attempt at creating an AngularJS-powered application.
 
 ## Features
 
@@ -18,6 +18,14 @@ This is my first attempt at creating an AngularJS-powered application
 * gulp >= 3.9.0
 * WordPress >= 4.4
 * WP Rest API >= 2.0-beta9
+
+## Installation
+
+Simply set WordPress to use pretty permalinks.
+
+The theme lets Angular take over all it's routing so any and all plugins that specify their own routes and URL variables will be rendered useless.
+
+Plugins which use shortcode to show their content however, will work.
 
 ## Development
 

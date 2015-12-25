@@ -1,5 +1,10 @@
-var gulp   = require('gulp');
-var concat = require('gulp-concat');
+var gulp    = require('gulp');
+var argv    = require('yargs').argv;
+var concat  = require('gulp-concat');
+var uglify  = require('gulp-uglify');
+var notify  = require('gulp-notify');
+var plumber = require('gulp-plumber');
+var gulpif  = require('gulp-if');
 
 gulp.task('scripts', function (){
     gulp.src([
@@ -14,5 +19,8 @@ gulp.task('scripts', function (){
 		'src/js/controllers/*.js',
 	])
     .pipe(concat('scripts.js'))
+    .pipe(gulpif(argv.production, uglify()))
+    .pipe(gulpif(argv.production, notify('AnunaNG: Uglified scripts.')))
+    .pipe(notify('AnunaNG: Compiled scripts.'))
     .pipe(gulp.dest('./dist/js/'));
 });

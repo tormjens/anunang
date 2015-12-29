@@ -8,6 +8,7 @@ var gulpif  = require('gulp-if');
 
 gulp.task('scripts', function (){
     gulp.src([
+    	'bower_components/foundation-sites/dist/foundation.js',
 		'bower_components/angular/angular.js',
 		'bower_components/angular-route/angular-route.js',
 		'src/js/functions.js',

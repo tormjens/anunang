@@ -1,9 +1,15 @@
 <?php
-function anunang_scripts() {
+function ngpress_scripts() {
+
+	wp_enqueue_style(
+		'app-css',
+		get_stylesheet_directory_uri() . '/dist/css/styles.css'
+	);
 
 	wp_enqueue_script(
 		'app-js',
-		get_stylesheet_directory_uri() . '/dist/js/scripts.js'
+		get_stylesheet_directory_uri() . '/dist/js/scripts.js',
+		array( 'jquery' )
 	);
 
 	wp_localize_script(
@@ -19,4 +25,4 @@ function anunang_scripts() {
 		)
 	);
 }
-add_action( 'wp_enqueue_scripts', 'anunang_scripts' );
+add_action( 'wp_enqueue_scripts', 'ngpress_scripts' );

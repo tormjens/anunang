@@ -4,6 +4,7 @@ $anunang_includes = [
   'inc/cpt.php',
   'inc/extras.php',
   'inc/api.php',
+  'inc/setup.php',
 ];
 
 foreach ($anunang_includes as $file) {

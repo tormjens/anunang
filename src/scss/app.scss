@@ -1,0 +1,8 @@
+// Import vendor styles and mixins
+@import '../../bower_components/bourbon/app/assets/stylesheets/_bourbon.scss';
+@import '../../bower_components/foundation-sites/scss/foundation.scss';
+
+// add variables here
+
+// load up foundation
+@include foundation-everything(true);

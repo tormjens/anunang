@@ -10,3 +10,7 @@ function no_redirect_guess_404_permalink( $header ){
 }
 
 add_filter( 'status_header', 'no_redirect_guess_404_permalink' );
+
+add_shortcode( 'supertag', function() {
+	return 'heiaaa <div class="testmother">Allaaah!</div>';
+} );

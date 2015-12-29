@@ -1,0 +1,13 @@
+{
+    "name": "tormorten/ngpress",
+    "description": "A WordPress-theme powered by AngularJS",
+    "authors": [
+        {
+            "name": "Tor Morten Jensen",
+            "email": "tormorten@anunatak.no"
+        }
+    ],
+    "require": {
+    	"shelob9/jp-menu-route": "dev-master"
+    }
+}

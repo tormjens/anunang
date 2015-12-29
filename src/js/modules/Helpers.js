@@ -1,8 +1,8 @@
 var module = angular.module('Helpers', []);
 
-module.filter('post_link', function() {
+module.filter('post_link', function($window) {
 	return function(post) {
-		return '/' + post.type + '/' + post.slug;
+		return $window.helpers.createUrl([post.type, post.slug]);
 	}
 });
 

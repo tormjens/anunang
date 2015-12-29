@@ -1,3 +1,12 @@
+/**
+ * Main App File
+ *
+ * Used to setup Angular with the correct routes, and add 404-stuff.
+ */
+
+/**
+ * Angular stuff
+ */
 var app = angular.module('app', ['ngRoute', 'ngPageTitle', 'Helpers'])
 .config(function($pageTitleProvider, $routeProvider, $locationProvider) {
 	$locationProvider.hashPrefix('!');
@@ -21,4 +30,16 @@ var app = angular.module('app', ['ngRoute', 'ngPageTitle', 'Helpers'])
             $pageTitle.set('Page Not Found');
         }
     });
-})
+});
+
+/**
+ * jQuery Stuff
+ */
+/**
+ * DOM Based routing
+ */
+(function($) {
+    jQuery(document).ready(function($) {
+        $(document).foundation();
+    });
+})(jQuery); // Fully reference jQuery after this point.
